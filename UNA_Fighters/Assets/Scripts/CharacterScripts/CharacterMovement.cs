@@ -13,7 +13,7 @@ public class CharacterMovement : MonoBehaviour
     private bool isJumping;
     private Vector3 currentPlayerPosition;
     private float moveSpeed = 5f;
-    private float deaccelleration = 0.23f;
+    private float deaccelleration = 0.3f;
     private Vector3 accelleration;
     public Rigidbody rb;
     public void Start()
@@ -43,13 +43,22 @@ public class CharacterMovement : MonoBehaviour
                     newAccelleration.x = accelleration.x - deaccelleration;
                     newAccelleration.y = accelleration.y;
                     GetComponent<Rigidbody>().velocity = newAccelleration;
+                    if (newAccelleration.x < 0)
+                    {
+                        newAccelleration.x = 0;
+                    }
                 }
                 else if(accelleration.x < 0)
                 {
                     newAccelleration.x = accelleration.x + deaccelleration;
                     newAccelleration.y = accelleration.y;
+                    if(newAccelleration.x > 0)
+                    {
+                        newAccelleration.x = 0;
+                    }
                     GetComponent<Rigidbody>().velocity = newAccelleration;
                 }
+               
             }           
         }
     }
