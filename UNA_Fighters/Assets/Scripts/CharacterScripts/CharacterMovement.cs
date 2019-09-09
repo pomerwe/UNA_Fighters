@@ -14,6 +14,7 @@ public class CharacterMovement : MonoBehaviour
     private Vector2 jump;
     private Vector3 accelleration;
 
+    public float animationSpeed = 0.2f;
     public float maxSpeed = 8f;
     public float jumpForce = 420;
     public float moveSpeed = 0.5f;
@@ -25,6 +26,7 @@ public class CharacterMovement : MonoBehaviour
     private bool isJumping;
     private bool isRunning;
 
+    private Direction currentDirection;
 
     public Rigidbody2D rb;
     public SpriteRenderer spriteRenderer;
@@ -33,11 +35,12 @@ public class CharacterMovement : MonoBehaviour
 
     public void Start()
     {
+        animator.speed = animationSpeed;
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
         characterAnimations = new Dictionary<string, AnimationClip>();
         GetAnimations();
-        animatorOverrideController["Animation"] = characterAnimations["Idle"];
+        ChangeAnimation("Idle");
 
 
 
@@ -45,11 +48,13 @@ public class CharacterMovement : MonoBehaviour
         jump = new Vector2(0, jumpForce);
         isJumping = false;
         isRunning = false;
+        currentDirection = Direction.Right;
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if(col.gameObject.name == "Floor")
+        
+        if (col.gameObject.name == "Floor")
         {
             Vector2 onFloorCollideVelocity = rb.velocity;
             onFloorCollideVelocity.y = 0;
@@ -64,6 +69,8 @@ public class CharacterMovement : MonoBehaviour
             }
             isJumping = false;
         }
+
+
     }
 
     void OnCollisionStay2D(Collision2D col)
@@ -105,7 +112,8 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        accelleration = rb.velocity;
+        CheckDirection();
+
         switch (playerNumber)
         {
             case 1:
@@ -120,13 +128,11 @@ public class CharacterMovement : MonoBehaviour
                 if (Input.GetKey(KeyCode.A))
                 {
                     RunAnimation();
-                    spriteRenderer.flipX = true;
                     Move(Movement.Backward);
                 }
                 if (Input.GetKey(KeyCode.D))
                 {
                     RunAnimation();
-                    spriteRenderer.flipX = false;
                     Move(Movement.Forward);
                 }
                 if (Input.GetKey(KeyCode.S))
@@ -136,11 +142,31 @@ public class CharacterMovement : MonoBehaviour
                 break;
 
             case 2:
-                if (Input.GetKeyDown(KeyCode.Keypad8))
+                if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
                     Jump();
                 }
-            break;
+                if (Input.GetKeyUp(KeyCode.UpArrow))
+                {
+                    DeaccellerateJump();
+                }
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    RunAnimation();
+                    spriteRenderer.flipX = true;
+                    Move(Movement.Backward);
+                }
+                if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    RunAnimation();
+                    spriteRenderer.flipX = false;
+                    Move(Movement.Forward);
+                }
+                if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    Move(Movement.Down);
+                }
+                break;
         }
     }
 
@@ -198,7 +224,7 @@ public class CharacterMovement : MonoBehaviour
 
     private void GetAnimations()
     {
-        Object[] animationClips = Resources.LoadAll($"Animations/{gameObject.name}/");
+        Object[] animationClips = Resources.LoadAll($"Animations/Characters/{gameObject.name}/");
 
         for(int i = 0; i < animationClips.Length; i++)
         {
@@ -207,11 +233,6 @@ public class CharacterMovement : MonoBehaviour
                 characterAnimations.Add(animationClips[i].name, animationClips[i] as AnimationClip);
             }
         }
-
-        for (int i = 0; i < animatorOverrideController.animationClips.Length; i++)
-        {
-            Debug.Log(animatorOverrideController.animationClips[i].name);
-        }  
     }
 
     public void ChangeAnimation(string animationName)
@@ -219,7 +240,7 @@ public class CharacterMovement : MonoBehaviour
         if (characterAnimations.ContainsKey(animationName))
         {
             animatorOverrideController["Animation"] = characterAnimations[animationName];
-            animator.Play("CurrentAnimation", 0, 0f);
+            animator.Play("Animation", 0, 0f);
         }
     }
 
@@ -245,6 +266,12 @@ public class CharacterMovement : MonoBehaviour
     public void CrouchAnimation()
     {
 
+    }
+
+    public void CheckDirection()
+    {
+        var flip = new Vector3(0, 180, 0);
+        transform.Rotate(flip);
     }
 
 }

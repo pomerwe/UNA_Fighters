@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8586204189387119224}
   - component: {fileID: 8586204189387119227}
   - component: {fileID: 8586204189387119222}
-  - component: {fileID: 8586204189387119223}
+  - component: {fileID: 6665707825604098235}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -119,7 +119,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.48002326, y: 0.020869613}
+  m_Offset: {x: -0.521678, y: -0.403059}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -145,13 +145,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNumber: 1
-  jumpForce: 320
-  moveSpeed: 4.5
+  animationSpeed: 0.2
+  maxSpeed: 8
+  jumpForce: 420
+  moveSpeed: 0.5
+  cancelJumpForce: 15
+  jumpReleaseForce: 150
   deaccelleration: 0.3
+  collider: {fileID: 8586204189387119227}
   rb: {fileID: 8586204189387119224}
   spriteRenderer: {fileID: 8586204189387119225}
-  animator: {fileID: 8586204189387119223}
---- !u!95 &8586204189387119223
+  animator: {fileID: 6665707825604098235}
+--- !u!95 &6665707825604098235
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -161,7 +166,7 @@ Animator:
   m_GameObject: {fileID: 8586204189387119229}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2bcc1e52deec9d048b142ceec9d0e8e3, type: 2}
+  m_Controller: {fileID: 9100000, guid: 97b140a3e6ba2994eafac1351a0db739, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
