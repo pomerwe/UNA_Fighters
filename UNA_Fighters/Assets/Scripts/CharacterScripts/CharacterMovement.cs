@@ -221,7 +221,6 @@ public class CharacterMovement : MonoBehaviour
 
     public void DeaccellerateJump()
     {
-        Debug.Log(rb.velocity.y);
         if(rb.velocity.y > 4)
         {
             Vector2 onJumpReleaseVelocity = new Vector2(0, 0);
