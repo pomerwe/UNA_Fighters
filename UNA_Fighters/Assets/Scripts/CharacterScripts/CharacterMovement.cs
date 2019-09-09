@@ -20,12 +20,14 @@ public class CharacterMovement : MonoBehaviour
     public float moveSpeed = 0.5f;
     public float cancelJumpForce = 15f;
     public float jumpReleaseForce = 100f;
-    public float deaccelleration = 0.3f;
+    public float deaccelleration = 0.6f;
 
 
     private bool isJumping;
     private bool isRunning;
+    private bool isFlipped;
 
+    private Direction lastDirection;
     private Direction currentDirection;
 
     public Rigidbody2D rb;
@@ -48,7 +50,9 @@ public class CharacterMovement : MonoBehaviour
         jump = new Vector2(0, jumpForce);
         isJumping = false;
         isRunning = false;
+        isFlipped = false;
         currentDirection = Direction.Right;
+        lastDirection = currentDirection;
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -107,12 +111,21 @@ public class CharacterMovement : MonoBehaviour
                
             }           
         }
+
+        if(rb.velocity.x == 0)
+        {
+            ChangeAnimation("Idle");
+        }
     }
 
     // Update is called once per frame
     private void Update()
     {
-        CheckDirection();
+        if(currentDirection != lastDirection)
+        {
+            CheckDirection();
+            lastDirection = currentDirection;
+        }
 
         switch (playerNumber)
         {
@@ -153,13 +166,11 @@ public class CharacterMovement : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftArrow))
                 {
                     RunAnimation();
-                    spriteRenderer.flipX = true;
                     Move(Movement.Backward);
                 }
                 if (Input.GetKey(KeyCode.RightArrow))
                 {
                     RunAnimation();
-                    spriteRenderer.flipX = false;
                     Move(Movement.Forward);
                 }
                 if (Input.GetKey(KeyCode.DownArrow))
@@ -190,6 +201,7 @@ public class CharacterMovement : MonoBehaviour
             case Movement.Forward:
                if(rb.velocity.x < maxSpeed)
                 {
+                    currentDirection = Direction.Right;
                     newSpeed.x = rb.velocity.x + moveSpeed;
                     if(newSpeed.x > maxSpeed)
                     {
@@ -202,6 +214,7 @@ public class CharacterMovement : MonoBehaviour
             case Movement.Backward:
                 if (rb.velocity.x > -maxSpeed)
                 {
+                    currentDirection = Direction.Left;
                     newSpeed.x = rb.velocity.x -  moveSpeed;
                     if (newSpeed.x < -maxSpeed)
                     {
@@ -271,7 +284,23 @@ public class CharacterMovement : MonoBehaviour
     public void CheckDirection()
     {
         var flip = new Vector3(0, 180, 0);
-        transform.Rotate(flip);
+        if (currentDirection == Direction.Right)
+        {
+            if (isFlipped)
+            {
+                transform.Rotate(flip);
+                isFlipped = false;
+            }
+        }
+        else if(currentDirection == Direction.Left)
+        {
+            if (!isFlipped)
+            {
+                transform.Rotate(flip);
+                isFlipped = true;
+            }
+        }
+        
     }
 
 }
