@@ -14,10 +14,11 @@ public class CharacterMovement : MonoBehaviour
     private Vector2 jump;
     private Vector3 accelleration;
 
+    public float maxSpeed = 8f;
     public float jumpForce = 420;
-    public float moveSpeed = 5f;
-    public float cancelJumpSpeed = 15f;
-    public float jumpReleaseSpeed = 100f;
+    public float moveSpeed = 0.5f;
+    public float cancelJumpForce = 15f;
+    public float jumpReleaseForce = 100f;
     public float deaccelleration = 0.3f;
 
 
@@ -155,30 +156,39 @@ public class CharacterMovement : MonoBehaviour
 
     private void Move(Movement movement)
     {
-        var newSpeed = new Vector2(0, 0);
-        var currentSpeed = rb.velocity;
+        var newSpeed = new Vector2(0,0);
+        newSpeed.y = rb.velocity.y;
+        newSpeed.x = rb.velocity.x;
         switch (movement)
         {
             case Movement.Forward:
-               if(currentSpeed.x < 6)
+               if(rb.velocity.x < maxSpeed)
                 {
-                    newSpeed.x = moveSpeed;
-                    rb.AddForce(newSpeed);
+                    newSpeed.x = rb.velocity.x + moveSpeed;
+                    if(newSpeed.x > maxSpeed)
+                    {
+                        newSpeed.x = maxSpeed;
+                    }
+                    rb.velocity = newSpeed;
                 }
             break;
 
             case Movement.Backward:
-                if (currentSpeed.x > -6)
+                if (rb.velocity.x > -maxSpeed)
                 {
-                    newSpeed.x = -moveSpeed;
-                    rb.AddForce(newSpeed);
+                    newSpeed.x = rb.velocity.x -  moveSpeed;
+                    if (newSpeed.x < -maxSpeed)
+                    {
+                        newSpeed.x = -maxSpeed;
+                    }
+                    rb.velocity = newSpeed;
                 }
             break;
 
             case Movement.Down:
                 if (isJumping)
                 {
-                    newSpeed.y = -cancelJumpSpeed;
+                    newSpeed.y = -cancelJumpForce;
                     rb.AddForce(newSpeed);
                 }
             break;
@@ -227,7 +237,7 @@ public class CharacterMovement : MonoBehaviour
         if(rb.velocity.y > 4)
         {
             Vector2 onJumpReleaseVelocity = new Vector2(0, 0);
-            onJumpReleaseVelocity.y = -jumpReleaseSpeed;
+            onJumpReleaseVelocity.y = -jumpReleaseForce;
             rb.AddForce(onJumpReleaseVelocity);
         }
     }
