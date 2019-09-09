@@ -206,8 +206,11 @@ public class CharacterMovement : MonoBehaviour
 
     public void ChangeAnimation(string animationName)
     {
-        animatorOverrideController["Animation"] = characterAnimations[animationName];
-        animator.Play("CurrentAnimation", 0, 0f);
+        if (characterAnimations.ContainsKey(animationName))
+        {
+            animatorOverrideController["Animation"] = characterAnimations[animationName];
+            animator.Play("CurrentAnimation", 0, 0f);
+        }
     }
 
     public void RunAnimation()
@@ -227,6 +230,11 @@ public class CharacterMovement : MonoBehaviour
             onJumpReleaseVelocity.y = -jumpReleaseSpeed;
             rb.AddForce(onJumpReleaseVelocity);
         }
+    }
+
+    public void CrouchAnimation()
+    {
+
     }
 
 }
