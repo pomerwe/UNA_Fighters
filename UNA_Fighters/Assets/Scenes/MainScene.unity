@@ -217,6 +217,11 @@ PrefabInstance:
       propertyPath: moveSpeed
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: deaccelleration
+      value: 0.8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c476328fab97be4d940c2de2c573940, type: 3}
 --- !u!4 &30013324 stripped
@@ -558,6 +563,11 @@ PrefabInstance:
         type: 3}
       propertyPath: maxSpeed
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: deaccelleration
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119225, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}

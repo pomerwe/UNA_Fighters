@@ -165,12 +165,11 @@ public class CharacterMovement : MonoBehaviour
                 }
                 if (Input.GetKey(KeyCode.LeftArrow))
                 {
-                    RunAnimation();
+                    
                     Move(Movement.Backward);
                 }
                 if (Input.GetKey(KeyCode.RightArrow))
                 {
-                    RunAnimation();
                     Move(Movement.Forward);
                 }
                 if (Input.GetKey(KeyCode.DownArrow))
@@ -199,7 +198,12 @@ public class CharacterMovement : MonoBehaviour
         switch (movement)
         {
             case Movement.Forward:
-               if(rb.velocity.x < maxSpeed)
+
+                if (!isJumping)
+                {
+                    RunAnimation();
+                }
+                if (rb.velocity.x < maxSpeed)
                 {
                     currentDirection = Direction.Right;
                     newSpeed.x = rb.velocity.x + moveSpeed;
@@ -212,6 +216,11 @@ public class CharacterMovement : MonoBehaviour
             break;
 
             case Movement.Backward:
+
+                if (!isJumping)
+                {
+                    RunAnimation();
+                }
                 if (rb.velocity.x > -maxSpeed)
                 {
                     currentDirection = Direction.Left;
