@@ -202,6 +202,16 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 5.2246637
       objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: m_Offset.x
+      value: -0.5117883
+      objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 3.677495
+      objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: playerNumber
@@ -220,7 +230,7 @@ PrefabInstance:
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: deaccelleration
-      value: 0.8
+      value: 0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c476328fab97be4d940c2de2c573940, type: 3}
@@ -391,7 +401,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8.057928
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -532,12 +542,12 @@ PrefabInstance:
     - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 2.32
+      value: 3.63
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 4.39
+      value: 4.58
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
@@ -567,7 +577,7 @@ PrefabInstance:
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: deaccelleration
-      value: 0.8
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119225, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}

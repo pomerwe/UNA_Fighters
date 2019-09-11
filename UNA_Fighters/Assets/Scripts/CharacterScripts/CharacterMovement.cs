@@ -10,9 +10,8 @@ public class CharacterMovement : MonoBehaviour
     //If it is player 1 or player 2
     public int playerNumber;
 
-    private Vector2 currentPlayerPosition;
+    private Vector3 currentPlayerPosition;
     private Vector2 jump;
-    private Vector3 accelleration;
 
     public float animationSpeed = 0.2f;
     public float maxSpeed = 8f;
@@ -26,6 +25,7 @@ public class CharacterMovement : MonoBehaviour
     private bool isJumping;
     private bool isRunning;
     private bool isFlipped;
+    private bool isCancelingJump;
 
     private Direction lastDirection;
     private Direction currentDirection;
@@ -46,22 +46,35 @@ public class CharacterMovement : MonoBehaviour
 
 
 
-        accelleration = rb.velocity;
+       
         jump = new Vector2(0, jumpForce);
         isJumping = false;
         isRunning = false;
         isFlipped = false;
+        isCancelingJump = false;
         currentDirection = Direction.Right;
         lastDirection = currentDirection;
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        
+
         if (col.gameObject.name == "Floor")
         {
             Vector2 onFloorCollideVelocity = rb.velocity;
             onFloorCollideVelocity.y = 0;
+            if (isCancelingJump && !isJumping)
+            {
+                if (onFloorCollideVelocity.x < 0)
+                {
+                    onFloorCollideVelocity.x = -maxSpeed / 2;
+                }
+                else
+                {
+                    onFloorCollideVelocity.x = maxSpeed / 2;
+                }
+
+            }
             rb.velocity = onFloorCollideVelocity;
             if (!isRunning && !isJumping)
             {
@@ -72,6 +85,7 @@ public class CharacterMovement : MonoBehaviour
                 ChangeAnimation("Run");
             }
             isJumping = false;
+            isCancelingJump = false;
         }
 
 
@@ -83,36 +97,11 @@ public class CharacterMovement : MonoBehaviour
         {
             if (!Input.anyKey)
             {
-                var newAccelleration = new Vector2(0, 0);
-                if (accelleration.x > 0)
-                {
-                    newAccelleration.x = accelleration.x - deaccelleration;
-                    newAccelleration.y = accelleration.y;
-                    if (newAccelleration.x < 0)
-                    {
-                        newAccelleration.x = 0;
-                        ChangeAnimation("Idle");
-                        isRunning = false;
-                    }
-                    rb.velocity = newAccelleration;
-                }
-                else if(accelleration.x < 0)
-                {
-                    newAccelleration.x = accelleration.x + deaccelleration;
-                    newAccelleration.y = accelleration.y;
-                    if(newAccelleration.x > 0)
-                    {
-                        newAccelleration.x = 0;
-                        ChangeAnimation("Idle");
-                        isRunning = false;
-                    }
-                    rb.velocity = newAccelleration;
-                }
-               
-            }           
+                Deaccellerate();
+            }
         }
 
-        if(rb.velocity.x == 0 && !isJumping)
+        if (rb.velocity.x == 0 && !isJumping && !isRunning)
         {
             ChangeAnimation("Idle");
         }
@@ -121,7 +110,12 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if(currentDirection != lastDirection)
+
+        CheckSpeed();
+
+        currentPlayerPosition = transform.position;
+
+        if (currentDirection != lastDirection)
         {
             CheckDirection();
             lastDirection = currentDirection;
@@ -134,18 +128,16 @@ public class CharacterMovement : MonoBehaviour
                 {
                     Jump();
                 }
-                if(Input.GetKeyUp(KeyCode.W))
+                if (Input.GetKeyUp(KeyCode.W))
                 {
                     DeaccellerateJump();
                 }
                 if (Input.GetKey(KeyCode.A))
                 {
-                    RunAnimation();
                     Move(Movement.Backward);
                 }
                 if (Input.GetKey(KeyCode.D))
                 {
-                    RunAnimation();
                     Move(Movement.Forward);
                 }
                 if (Input.GetKey(KeyCode.S))
@@ -165,7 +157,7 @@ public class CharacterMovement : MonoBehaviour
                 }
                 if (Input.GetKey(KeyCode.LeftArrow))
                 {
-                    
+
                     Move(Movement.Backward);
                 }
                 if (Input.GetKey(KeyCode.RightArrow))
@@ -184,15 +176,18 @@ public class CharacterMovement : MonoBehaviour
     {
         if (!isJumping)
         {
+            Vector2 cancelGravityOnJumpForce = new Vector2(rb.velocity.x, rb.velocity.y);
+            cancelGravityOnJumpForce.y = 0;
+            rb.velocity = cancelGravityOnJumpForce;
             ChangeAnimation("Jump");
             isJumping = true;
             rb.AddForce(jump);
-        }        
+        }
     }
 
     private void Move(Movement movement)
     {
-        var newSpeed = new Vector2(0,0);
+        var newSpeed = new Vector2(0, 0);
         newSpeed.y = rb.velocity.y;
         newSpeed.x = rb.velocity.x;
         switch (movement)
@@ -207,13 +202,13 @@ public class CharacterMovement : MonoBehaviour
                 {
                     currentDirection = Direction.Right;
                     newSpeed.x = rb.velocity.x + moveSpeed;
-                    if(newSpeed.x > maxSpeed)
+                    if (newSpeed.x > maxSpeed)
                     {
                         newSpeed.x = maxSpeed;
                     }
                     rb.velocity = newSpeed;
                 }
-            break;
+                break;
 
             case Movement.Backward:
 
@@ -224,22 +219,25 @@ public class CharacterMovement : MonoBehaviour
                 if (rb.velocity.x > -maxSpeed)
                 {
                     currentDirection = Direction.Left;
-                    newSpeed.x = rb.velocity.x -  moveSpeed;
+                    newSpeed.x = rb.velocity.x - moveSpeed;
                     if (newSpeed.x < -maxSpeed)
                     {
                         newSpeed.x = -maxSpeed;
                     }
                     rb.velocity = newSpeed;
                 }
-            break;
+                break;
 
             case Movement.Down:
                 if (isJumping)
                 {
-                    newSpeed.y = -cancelJumpForce;
-                    rb.AddForce(newSpeed);
+                    if (rb.velocity.y > -11.5)
+                    {
+                        CancelJump();
+                    }
+                    
                 }
-            break;
+                break;
         }
     }
 
@@ -248,9 +246,9 @@ public class CharacterMovement : MonoBehaviour
     {
         Object[] animationClips = Resources.LoadAll($"Animations/Characters/{gameObject.name}/");
 
-        for(int i = 0; i < animationClips.Length; i++)
+        for (int i = 0; i < animationClips.Length; i++)
         {
-            if(animationClips[i] is AnimationClip)
+            if (animationClips[i] is AnimationClip)
             {
                 characterAnimations.Add(animationClips[i].name, animationClips[i] as AnimationClip);
             }
@@ -271,13 +269,13 @@ public class CharacterMovement : MonoBehaviour
         if (!isRunning)
         {
             ChangeAnimation("Run");
+            isRunning = true;
         }
-        isRunning = true;
     }
 
     public void DeaccellerateJump()
     {
-        if(rb.velocity.y > 4)
+        if (rb.velocity.y > 4)
         {
             Vector2 onJumpReleaseVelocity = new Vector2(0, 0);
             onJumpReleaseVelocity.y = -jumpReleaseForce;
@@ -301,7 +299,7 @@ public class CharacterMovement : MonoBehaviour
                 isFlipped = false;
             }
         }
-        else if(currentDirection == Direction.Left)
+        else if (currentDirection == Direction.Left)
         {
             if (!isFlipped)
             {
@@ -309,7 +307,71 @@ public class CharacterMovement : MonoBehaviour
                 isFlipped = true;
             }
         }
+
+    }
+
+
+    public void CheckSpeed()
+    {
+        Vector2 ControlledSpeed = rb.velocity;
+        if (rb.velocity.x > maxSpeed)
+        {
+            ControlledSpeed.x = maxSpeed;
+            rb.velocity = ControlledSpeed;
+        }
+        if(rb.velocity.x < -maxSpeed)
+        {
+            ControlledSpeed.x = -maxSpeed;
+            rb.velocity = ControlledSpeed;
+        }
+    }
+
+    public void Deaccellerate()
+    {
+        var newAccelleration = new Vector2(0, 0);
+        if (rb.velocity.x > 0)
+        {
+            newAccelleration.x = rb.velocity.x - deaccelleration;
+            newAccelleration.y = rb.velocity.y;
+            if (newAccelleration.x < 0)
+            {
+                newAccelleration.x = 0;
+                ChangeAnimation("Idle");
+                isRunning = false;
+            }
+            rb.velocity = newAccelleration;
+        }
+        else if (rb.velocity.x < 0)
+        { 
+            newAccelleration.x = rb.velocity.x + deaccelleration;
+            newAccelleration.y = rb.velocity.y;
+            if (newAccelleration.x > 0)
+            {
+                newAccelleration.x = 0;
+                ChangeAnimation("Idle");
+                isRunning = false;
+            }
+            rb.velocity = newAccelleration;
+        }
+        else
+        {
+            if (isRunning)
+            {
+                isRunning = false;
+            }
+        }
+    }
+
+    public void CancelJump()
+    {
+        Vector2 newSpeed = rb.velocity;
+        isCancelingJump = true;
+        newSpeed.y = -cancelJumpForce;
+        rb.AddForce(newSpeed);
         
     }
 
 }
+
+
+
