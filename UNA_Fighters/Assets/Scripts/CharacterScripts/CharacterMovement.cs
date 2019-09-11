@@ -63,7 +63,7 @@ public class CharacterMovement : MonoBehaviour
             Vector2 onFloorCollideVelocity = rb.velocity;
             onFloorCollideVelocity.y = 0;
             rb.velocity = onFloorCollideVelocity;
-            if (!isRunning)
+            if (!isRunning && !isJumping)
             {
                 ChangeAnimation("Idle");
             }
@@ -112,7 +112,7 @@ public class CharacterMovement : MonoBehaviour
             }           
         }
 
-        if(rb.velocity.x == 0)
+        if(rb.velocity.x == 0 && !isJumping)
         {
             ChangeAnimation("Idle");
         }
