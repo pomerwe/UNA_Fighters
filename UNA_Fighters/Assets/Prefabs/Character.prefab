@@ -152,7 +152,10 @@ MonoBehaviour:
   cancelJumpForce: 15
   jumpReleaseForce: 150
   deaccelleration: 0.3
-  collider: {fileID: 8586204189387119227}
+  maxfallDownSpeed: -10
+  weightValue: 5
+  maxWeight: 20
+  bc: {fileID: 8586204189387119227}
   rb: {fileID: 8586204189387119224}
   spriteRenderer: {fileID: 8586204189387119225}
   animator: {fileID: 6665707825604098235}

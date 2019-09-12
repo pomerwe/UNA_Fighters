@@ -20,8 +20,10 @@ public class CharacterMovement : MonoBehaviour
     public float cancelJumpForce = 15f;
     public float jumpReleaseForce = 100f;
     public float deaccelleration = 0.6f;
+    public float maxfallDownSpeed = -10f;
+    public float weightValue = 5f;
 
-
+    private bool isIdle;
     private bool isJumping;
     private bool isRunning;
     private bool isFlipped;
@@ -30,6 +32,7 @@ public class CharacterMovement : MonoBehaviour
     private Direction lastDirection;
     private Direction currentDirection;
 
+    public BoxCollider2D bc;
     public Rigidbody2D rb;
     public SpriteRenderer spriteRenderer;
     public Animator animator;
@@ -52,13 +55,14 @@ public class CharacterMovement : MonoBehaviour
         isRunning = false;
         isFlipped = false;
         isCancelingJump = false;
+        isIdle = true;
         currentDirection = Direction.Right;
         lastDirection = currentDirection;
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
-
+        
         if (col.gameObject.name == "Floor")
         {
             Vector2 onFloorCollideVelocity = rb.velocity;
@@ -76,7 +80,8 @@ public class CharacterMovement : MonoBehaviour
 
             }
             rb.velocity = onFloorCollideVelocity;
-            if (!isRunning && !isJumping)
+
+            if (isIdle)
             {
                 ChangeAnimation("Idle");
             }
@@ -93,23 +98,38 @@ public class CharacterMovement : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D col)
     {
+
+        if (col.gameObject.transform.parent.gameObject.name == "Characters")
+        {
+            if (isIdle)
+            {
+                WeightOnCollision(col);
+            }
+
+
+        }
+
         if (col.gameObject.name == "Floor")
         {
-            if (!Input.anyKey)
+            if (!CheckPlayerButton())
             {
                 Deaccellerate();
             }
+
+            if (rb.velocity.x == 0 && !isJumping && !isRunning)
+            {
+                ChangeAnimation("Idle");
+            }
         }
 
-        if (rb.velocity.x == 0 && !isJumping && !isRunning)
-        {
-            ChangeAnimation("Idle");
-        }
+       
     }
 
     // Update is called once per frame
     private void Update()
     {
+
+        CheckIdleness();
 
         CheckSpeed();
 
@@ -231,7 +251,7 @@ public class CharacterMovement : MonoBehaviour
             case Movement.Down:
                 if (isJumping)
                 {
-                    if (rb.velocity.y > -11.5)
+                    if (rb.velocity.y > maxfallDownSpeed)
                     {
                         CancelJump();
                     }
@@ -369,6 +389,85 @@ public class CharacterMovement : MonoBehaviour
         newSpeed.y = -cancelJumpForce;
         rb.AddForce(newSpeed);
         
+    }
+
+    public void WeightOnCollision(Collision2D col)
+    {
+        var multiplier = col.gameObject.GetComponent<CharacterMovement>().weightValue/2 ;
+        Vector2 force = new Vector2(rb.velocity.x,0);
+        force.x = -force.x * multiplier;
+        col.rigidbody.AddForce(force);
+    }
+
+    public void CheckIdleness()
+    {
+        if(isJumping | isRunning)
+        {
+            isIdle = false;
+        }
+        else
+        {
+            isIdle = true;
+        }
+    }
+
+    public bool CheckPlayerButton()
+    {
+       
+        switch (playerNumber)
+        {
+            case 1:
+                if (Input.GetKeyDown(KeyCode.W))
+                {
+                    return true;
+                }
+                else if (Input.GetKeyUp(KeyCode.W))
+                {
+                    return true;
+                }
+                else if(Input.GetKey(KeyCode.A))
+                {
+                    return true;
+                }
+                else if(Input.GetKey(KeyCode.D))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.S))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            case 2:
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    return true;
+                }
+                else if (Input.GetKeyUp(KeyCode.UpArrow))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+        }
+        return true;
     }
 
 }

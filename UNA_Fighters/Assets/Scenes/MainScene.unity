@@ -225,12 +225,17 @@ PrefabInstance:
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: moveSpeed
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: deaccelleration
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: weightValue
+      value: 55
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c476328fab97be4d940c2de2c573940, type: 3}
@@ -542,12 +547,12 @@ PrefabInstance:
     - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 3.63
+      value: 2.32
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 4.58
+      value: 4.39
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119227, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
@@ -572,12 +577,22 @@ PrefabInstance:
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: maxSpeed
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
       propertyPath: deaccelleration
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: maxfallDownSpeed
+      value: -18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8586204189387119222, guid: 6c476328fab97be4d940c2de2c573940,
+        type: 3}
+      propertyPath: weightValue
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8586204189387119225, guid: 6c476328fab97be4d940c2de2c573940,
         type: 3}
