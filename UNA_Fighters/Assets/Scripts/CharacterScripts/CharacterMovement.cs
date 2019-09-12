@@ -23,6 +23,7 @@ public class CharacterMovement : MonoBehaviour
     public float maxfallDownSpeed = -10f;
     public float weightValue = 5f;
 
+    public bool isAttacking = false;
     private bool isIdle;
     private bool isJumping;
     private bool isRunning;
@@ -101,11 +102,6 @@ public class CharacterMovement : MonoBehaviour
 
         if (col.gameObject.transform.parent.gameObject.name == "Characters")
         {
-            if (isIdle)
-            {
-                WeightOnCollision(col);
-            }
-
 
         }
 
@@ -116,7 +112,7 @@ public class CharacterMovement : MonoBehaviour
                 Deaccellerate();
             }
 
-            if (rb.velocity.x == 0 && !isJumping && !isRunning)
+            if (rb.velocity.x == 0 && !isJumping && !isRunning && !isAttacking)
             {
                 ChangeAnimation("Idle");
             }
@@ -167,26 +163,39 @@ public class CharacterMovement : MonoBehaviour
                 break;
 
             case 2:
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if (!isAttacking)
                 {
-                    Jump();
-                }
-                if (Input.GetKeyUp(KeyCode.UpArrow))
-                {
-                    DeaccellerateJump();
-                }
-                if (Input.GetKey(KeyCode.LeftArrow))
-                {
+                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        Jump();
+                    }
+                    if (Input.GetKeyUp(KeyCode.UpArrow))
+                    {
+                        DeaccellerateJump();
+                    }
+                    if (Input.GetKey(KeyCode.LeftArrow))
+                    {
 
-                    Move(Movement.Backward);
+                        Move(Movement.Backward);
+                    }
+                    if (Input.GetKey(KeyCode.RightArrow))
+                    {
+                        Move(Movement.Forward);
+                    }
+                    if (Input.GetKey(KeyCode.DownArrow))
+                    {
+                        Move(Movement.Down);
+                    }
                 }
-                if (Input.GetKey(KeyCode.RightArrow))
+                
+                if (Input.GetKeyDown(KeyCode.Keypad0))
                 {
-                    Move(Movement.Forward);
-                }
-                if (Input.GetKey(KeyCode.DownArrow))
-                {
-                    Move(Movement.Down);
+                    if (!isAttacking)
+                    {
+                        isAttacking = true;
+                        AttackAnimation("Attack01");
+                        
+                    }
                 }
                 break;
         }
@@ -281,6 +290,16 @@ public class CharacterMovement : MonoBehaviour
         {
             animatorOverrideController["Animation"] = characterAnimations[animationName];
             animator.Play("Animation", 0, 0f);
+            isAttacking = false;
+        }
+    }
+
+    public void AttackAnimation(string animationName)
+    {
+        if (characterAnimations.ContainsKey(animationName))
+        {
+            animatorOverrideController["Attack"] = characterAnimations[animationName];
+            animator.Play("Attack", 0, 0f);
         }
     }
 
@@ -391,17 +410,9 @@ public class CharacterMovement : MonoBehaviour
         
     }
 
-    public void WeightOnCollision(Collision2D col)
-    {
-        var multiplier = col.gameObject.GetComponent<CharacterMovement>().weightValue/2 ;
-        Vector2 force = new Vector2(rb.velocity.x,0);
-        force.x = -force.x * multiplier;
-        col.rigidbody.AddForce(force);
-    }
-
     public void CheckIdleness()
     {
-        if(isJumping | isRunning)
+        if(isJumping | isRunning | isAttacking)
         {
             isIdle = false;
         }
@@ -411,9 +422,9 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+
     public bool CheckPlayerButton()
     {
-       
         switch (playerNumber)
         {
             case 1:
