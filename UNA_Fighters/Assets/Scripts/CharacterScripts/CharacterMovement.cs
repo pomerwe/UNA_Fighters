@@ -23,12 +23,17 @@ public class CharacterMovement : MonoBehaviour
     public float maxfallDownSpeed = -10f;
     public float weightValue = 5f;
 
+    public int jumpCount;
+
     public bool isAttacking = false;
-    private bool isIdle;
-    private bool isJumping;
-    private bool isRunning;
-    private bool isFlipped;
-    private bool isCancelingJump;
+    public bool isIdle;
+    public bool isJumping;
+    public bool isRunning;
+    public bool isFlipped;
+    public bool isCancelingJump;
+    public bool isCrouching;
+    public bool crouchHolded;
+    public bool isGuarding;
 
     private Direction lastDirection;
     private Direction currentDirection;
@@ -49,14 +54,17 @@ public class CharacterMovement : MonoBehaviour
         ChangeAnimation("Idle");
 
 
+        crouchHolded = false;
+        jumpCount = 0;
 
-       
         jump = new Vector2(0, jumpForce);
         isJumping = false;
         isRunning = false;
         isFlipped = false;
         isCancelingJump = false;
+        isCrouching = false;
         isIdle = true;
+        isGuarding = false;
         currentDirection = Direction.Right;
         lastDirection = currentDirection;
     }
@@ -90,6 +98,8 @@ public class CharacterMovement : MonoBehaviour
             {
                 ChangeAnimation("Run");
             }
+
+            jumpCount = 0;
             isJumping = false;
             isCancelingJump = false;
         }
@@ -99,6 +109,7 @@ public class CharacterMovement : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D col)
     {
+        CheckIdleness();
 
         if (col.gameObject.transform.parent.gameObject.name == "Characters")
         {
@@ -112,7 +123,7 @@ public class CharacterMovement : MonoBehaviour
                 Deaccellerate();
             }
 
-            if (rb.velocity.x == 0 && !isJumping && !isRunning && !isAttacking)
+            if (rb.velocity.x == 0 && isIdle)
             {
                 ChangeAnimation("Idle");
             }
@@ -144,6 +155,14 @@ public class CharacterMovement : MonoBehaviour
                 {
                     Jump();
                 }
+                if (Input.GetKey(KeyCode.Q))
+                {
+                    Guard();
+                }
+                if (Input.GetKeyUp(KeyCode.Q))
+                {
+                    StopGuard();
+                }
                 if (Input.GetKeyUp(KeyCode.W))
                 {
                     DeaccellerateJump();
@@ -159,6 +178,10 @@ public class CharacterMovement : MonoBehaviour
                 if (Input.GetKey(KeyCode.S))
                 {
                     Move(Movement.Down);
+                }
+                if (Input.GetKeyUp(KeyCode.S))
+                {
+                    CancelCrouch();
                 }
                 break;
 
@@ -203,57 +226,63 @@ public class CharacterMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (!isJumping)
+        if (!isJumping && !isCrouching || jumpCount<2)
         {
             Vector2 cancelGravityOnJumpForce = new Vector2(rb.velocity.x, rb.velocity.y);
             cancelGravityOnJumpForce.y = 0;
             rb.velocity = cancelGravityOnJumpForce;
             ChangeAnimation("Jump");
             isJumping = true;
+            jumpCount++;
             rb.AddForce(jump);
         }
     }
 
     private void Move(Movement movement)
     {
+        
         var newSpeed = new Vector2(0, 0);
         newSpeed.y = rb.velocity.y;
         newSpeed.x = rb.velocity.x;
         switch (movement)
         {
             case Movement.Forward:
-
-                if (!isJumping)
+                currentDirection = Direction.Right;
+                if (!crouchHolded)
                 {
-                    RunAnimation();
-                }
-                if (rb.velocity.x < maxSpeed)
-                {
-                    currentDirection = Direction.Right;
-                    newSpeed.x = rb.velocity.x + moveSpeed;
-                    if (newSpeed.x > maxSpeed)
+                    if (!isJumping)
                     {
-                        newSpeed.x = maxSpeed;
+                        RunAnimation();
                     }
-                    rb.velocity = newSpeed;
+                    if (rb.velocity.x < maxSpeed)
+                    {
+                        newSpeed.x = rb.velocity.x + moveSpeed;
+                        if (newSpeed.x > maxSpeed)
+                        {
+                            newSpeed.x = maxSpeed;
+                        }
+                        rb.velocity = newSpeed;
+                    }
                 }
                 break;
 
             case Movement.Backward:
-
-                if (!isJumping)
+                currentDirection = Direction.Left;
+                if (!crouchHolded)
                 {
-                    RunAnimation();
-                }
-                if (rb.velocity.x > -maxSpeed)
-                {
-                    currentDirection = Direction.Left;
-                    newSpeed.x = rb.velocity.x - moveSpeed;
-                    if (newSpeed.x < -maxSpeed)
+                    if (!isJumping)
                     {
-                        newSpeed.x = -maxSpeed;
+                        RunAnimation();
                     }
-                    rb.velocity = newSpeed;
+                    if (rb.velocity.x > -maxSpeed)
+                    {
+                        newSpeed.x = rb.velocity.x - moveSpeed;
+                        if (newSpeed.x < -maxSpeed)
+                        {
+                            newSpeed.x = -maxSpeed;
+                        }
+                        rb.velocity = newSpeed;
+                    }
                 }
                 break;
 
@@ -264,10 +293,14 @@ public class CharacterMovement : MonoBehaviour
                     {
                         CancelJump();
                     }
-                    
+                }
+                else
+                {
+                    CrouchAnimation();
                 }
                 break;
         }
+        
     }
 
 
@@ -288,9 +321,12 @@ public class CharacterMovement : MonoBehaviour
     {
         if (characterAnimations.ContainsKey(animationName))
         {
-            animatorOverrideController["Animation"] = characterAnimations[animationName];
-            animator.Play("Animation", 0, 0f);
-            isAttacking = false;
+            if(animatorOverrideController["Animation"] != characterAnimations[animationName] || animationName.Equals("Jump"))
+            {
+                animatorOverrideController["Animation"] = characterAnimations[animationName];
+                animator.Play("Animation", 0, 0f);
+                isAttacking = false;
+            }
         }
     }
 
@@ -305,11 +341,8 @@ public class CharacterMovement : MonoBehaviour
 
     public void RunAnimation()
     {
-        if (!isRunning)
-        {
-            ChangeAnimation("Run");
-            isRunning = true;
-        }
+        ChangeAnimation("Run");
+        isRunning = true;
     }
 
     public void DeaccellerateJump()
@@ -324,7 +357,18 @@ public class CharacterMovement : MonoBehaviour
 
     public void CrouchAnimation()
     {
+        
+        ChangeAnimation("Crouch");
+        Stop();
+        isCrouching = true;
+        crouchHolded = true;
+        
+    }
 
+    public void CancelCrouch()
+    {
+        crouchHolded = false;
+        isCrouching = false;
     }
 
     public void CheckDirection()
@@ -412,7 +456,7 @@ public class CharacterMovement : MonoBehaviour
 
     public void CheckIdleness()
     {
-        if(isJumping | isRunning | isAttacking)
+        if(isJumping | isRunning | isAttacking | isCrouching | isGuarding)
         {
             isIdle = false;
         }
@@ -422,6 +466,24 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+    public void Stop()
+    {
+        rb.velocity = new Vector2(0, 0);
+    }
+
+    public void Guard()
+    {
+        if (!isGuarding)
+        {
+            isGuarding = true;
+            ChangeAnimation("Guard");
+        }
+    }
+
+    public void StopGuard()
+    {
+        isGuarding = false;
+    }
 
     public bool CheckPlayerButton()
     {
@@ -445,6 +507,10 @@ public class CharacterMovement : MonoBehaviour
                     return true;
                 }
                 else if (Input.GetKey(KeyCode.S))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.Q))
                 {
                     return true;
                 }

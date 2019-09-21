@@ -103,7 +103,7 @@ Rigidbody2D:
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!61 &8586204189387119227
@@ -146,15 +146,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerNumber: 1
   animationSpeed: 0.2
-  maxSpeed: 8
+  maxSpeed: 15
   jumpForce: 420
-  moveSpeed: 0.5
+  moveSpeed: 0.6
   cancelJumpForce: 15
   jumpReleaseForce: 150
-  deaccelleration: 0.3
+  deaccelleration: 99
   maxfallDownSpeed: -10
   weightValue: 5
-  maxWeight: 20
+  isAttacking: 0
+  isIdle: 0
+  isJumping: 0
+  isRunning: 0
+  isFlipped: 0
+  isCancelingJump: 0
+  isCrouching: 0
+  crouchHolded: 0
   bc: {fileID: 8586204189387119227}
   rb: {fileID: 8586204189387119224}
   spriteRenderer: {fileID: 8586204189387119225}
