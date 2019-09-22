@@ -552,7 +552,7 @@ public class CharacterMovement : MonoBehaviour
 
     public void OnAttackWork(Collider2D target)
     {
-        target.gameObject.GetComponent<SpriteRenderer>().material.color = Color.red;
+        target.gameObject.GetComponent<CharacterStats>().character.HP -= 5;
     }
 
     public bool CheckPlayerButton()
