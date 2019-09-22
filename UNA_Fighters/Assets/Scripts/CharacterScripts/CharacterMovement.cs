@@ -14,6 +14,7 @@ public class CharacterMovement : MonoBehaviour
     private Vector2 jump;
 
     public float animationSpeed = 0.2f;
+    public float attackSpeed = 2f;
     public float maxSpeed = 8f;
     public float jumpForce = 420;
     public float moveSpeed = 0.5f;
@@ -24,6 +25,7 @@ public class CharacterMovement : MonoBehaviour
     public float weightValue = 5f;
 
     public int jumpCount;
+    public int attackCount;
 
     public bool isAttacking = false;
     public bool isIdle;
@@ -46,16 +48,19 @@ public class CharacterMovement : MonoBehaviour
 
     public void Start()
     {
-        animator.speed = animationSpeed;
+
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
-        characterAnimations = new Dictionary<string, AnimationClip>();
+
+        NormalAnimationsConfig();
+        
         GetAnimations();
         ChangeAnimation("Idle");
 
 
         crouchHolded = false;
         jumpCount = 0;
+        attackCount = 0;
 
         jump = new Vector2(0, jumpForce);
         isJumping = false;
@@ -71,7 +76,15 @@ public class CharacterMovement : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        
+
+        if (col.gameObject.transform.parent.gameObject.name == "Characters")
+        {
+            if(col.otherCollider is CapsuleCollider2D)
+            {
+                OnAttackWork(col.collider);
+            }
+        }
+
         if (col.gameObject.name == "Floor")
         {
             Vector2 onFloorCollideVelocity = rb.velocity;
@@ -94,7 +107,11 @@ public class CharacterMovement : MonoBehaviour
             {
                 ChangeAnimation("Idle");
             }
-            else
+            else if(isGuarding)
+            {
+                ChangeAnimation("Guard");
+            }
+            else if(isRunning)
             {
                 ChangeAnimation("Run");
             }
@@ -111,14 +128,11 @@ public class CharacterMovement : MonoBehaviour
     {
         CheckIdleness();
 
-        if (col.gameObject.transform.parent.gameObject.name == "Characters")
-        {
-
-        }
+       
 
         if (col.gameObject.name == "Floor")
         {
-            if (!CheckPlayerButton())
+            if (!CheckPlayerButton() || isGuarding)
             {
                 Deaccellerate();
             }
@@ -183,6 +197,10 @@ public class CharacterMovement : MonoBehaviour
                 {
                     CancelCrouch();
                 }
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    Attack();
+                }
                 break;
 
             case 2:
@@ -210,102 +228,117 @@ public class CharacterMovement : MonoBehaviour
                         Move(Movement.Down);
                     }
                 }
-                
-                if (Input.GetKeyDown(KeyCode.Keypad0))
-                {
-                    if (!isAttacking)
-                    {
-                        isAttacking = true;
-                        AttackAnimation("Attack01");
-                        
-                    }
-                }
                 break;
+        }
+    }
+
+    private void Attack()
+    {
+        if (CanAttack())
+        {
+            Stop();
+            if (attackCount >= 2)
+            {
+                attackCount = 0;
+            }
+            attackCount++;
+            if (!isAttacking)
+            {
+                isAttacking = true;
+                AttackAnimation($"Attack0{attackCount}");
+            }
         }
     }
 
     private void Jump()
     {
-        if (!isJumping && !isCrouching || jumpCount<2)
+        if (CanJump())
         {
-            Vector2 cancelGravityOnJumpForce = new Vector2(rb.velocity.x, rb.velocity.y);
-            cancelGravityOnJumpForce.y = 0;
-            rb.velocity = cancelGravityOnJumpForce;
-            ChangeAnimation("Jump");
-            isJumping = true;
-            jumpCount++;
-            rb.AddForce(jump);
+            if (!isJumping || jumpCount < 2)
+            {
+                Vector2 cancelGravityOnJumpForce = new Vector2(rb.velocity.x, rb.velocity.y);
+                cancelGravityOnJumpForce.y = 0;
+                rb.velocity = cancelGravityOnJumpForce;
+                ChangeAnimation("Jump");
+                isJumping = true;
+                jumpCount++;
+                rb.AddForce(jump);
+            }
         }
     }
 
+    
+
     private void Move(Movement movement)
     {
-        
-        var newSpeed = new Vector2(0, 0);
-        newSpeed.y = rb.velocity.y;
-        newSpeed.x = rb.velocity.x;
-        switch (movement)
+        if (!isGuarding && !isAttacking)
         {
-            case Movement.Forward:
-                currentDirection = Direction.Right;
-                if (!crouchHolded)
-                {
-                    if (!isJumping)
+            var newSpeed = new Vector2(0, 0);
+            newSpeed.y = rb.velocity.y;
+            newSpeed.x = rb.velocity.x;
+            switch (movement)
+            {
+                case Movement.Forward:
+                    currentDirection = Direction.Right;
+                    if (!crouchHolded)
                     {
-                        RunAnimation();
-                    }
-                    if (rb.velocity.x < maxSpeed)
-                    {
-                        newSpeed.x = rb.velocity.x + moveSpeed;
-                        if (newSpeed.x > maxSpeed)
+                        if (!isJumping)
                         {
-                            newSpeed.x = maxSpeed;
+                            RunAnimation();
                         }
-                        rb.velocity = newSpeed;
-                    }
-                }
-                break;
-
-            case Movement.Backward:
-                currentDirection = Direction.Left;
-                if (!crouchHolded)
-                {
-                    if (!isJumping)
-                    {
-                        RunAnimation();
-                    }
-                    if (rb.velocity.x > -maxSpeed)
-                    {
-                        newSpeed.x = rb.velocity.x - moveSpeed;
-                        if (newSpeed.x < -maxSpeed)
+                        if (rb.velocity.x < maxSpeed)
                         {
-                            newSpeed.x = -maxSpeed;
+                            newSpeed.x = rb.velocity.x + moveSpeed;
+                            if (newSpeed.x > maxSpeed)
+                            {
+                                newSpeed.x = maxSpeed;
+                            }
+                            rb.velocity = newSpeed;
                         }
-                        rb.velocity = newSpeed;
                     }
-                }
-                break;
+                    break;
 
-            case Movement.Down:
-                if (isJumping)
-                {
-                    if (rb.velocity.y > maxfallDownSpeed)
+                case Movement.Backward:
+                    currentDirection = Direction.Left;
+                    if (!crouchHolded)
                     {
-                        CancelJump();
+                        if (!isJumping)
+                        {
+                            RunAnimation();
+                        }
+                        if (rb.velocity.x > -maxSpeed)
+                        {
+                            newSpeed.x = rb.velocity.x - moveSpeed;
+                            if (newSpeed.x < -maxSpeed)
+                            {
+                                newSpeed.x = -maxSpeed;
+                            }
+                            rb.velocity = newSpeed;
+                        }
                     }
-                }
-                else
-                {
-                    CrouchAnimation();
-                }
-                break;
-        }
-        
+                    break;
+
+                case Movement.Down:
+                    if (isJumping)
+                    {
+                        if (rb.velocity.y > maxfallDownSpeed)
+                        {
+                            CancelJump();
+                        }
+                    }
+                    else
+                    {
+                        Crouch();
+                    }
+                    break;
+            }
+        }        
     }
 
 
     private void GetAnimations()
     {
+        characterAnimations = new Dictionary<string, AnimationClip>();
         Object[] animationClips = Resources.LoadAll($"Animations/Characters/{gameObject.name}/");
 
         for (int i = 0; i < animationClips.Length; i++)
@@ -321,7 +354,8 @@ public class CharacterMovement : MonoBehaviour
     {
         if (characterAnimations.ContainsKey(animationName))
         {
-            if(animatorOverrideController["Animation"] != characterAnimations[animationName] || animationName.Equals("Jump"))
+            NormalAnimationsConfig();
+            if (animatorOverrideController["Animation"] != characterAnimations[animationName] || animationName.Equals("Jump"))
             {
                 animatorOverrideController["Animation"] = characterAnimations[animationName];
                 animator.Play("Animation", 0, 0f);
@@ -334,7 +368,8 @@ public class CharacterMovement : MonoBehaviour
     {
         if (characterAnimations.ContainsKey(animationName))
         {
-            animatorOverrideController["Attack"] = characterAnimations[animationName];
+            AttackAnimationsConfig();
+            animatorOverrideController["Animation"] = characterAnimations[animationName];
             animator.Play("Attack", 0, 0f);
         }
     }
@@ -355,15 +390,18 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    public void CrouchAnimation()
+    public void Crouch()
     {
-        
-        ChangeAnimation("Crouch");
-        Stop();
-        isCrouching = true;
-        crouchHolded = true;
-        
+        if (CanCrouch())
+        {
+            ChangeAnimation("Crouch");
+            Stop();
+            isCrouching = true;
+            crouchHolded = true;
+        }
     }
+
+    
 
     public void CancelCrouch()
     {
@@ -454,6 +492,22 @@ public class CharacterMovement : MonoBehaviour
         
     }
 
+    private bool CanJump()
+    {
+        return !isGuarding && !isCrouching && !isAttacking;
+    }
+
+    private bool CanAttack()
+    {
+        return !isJumping && !isGuarding;
+    }
+
+    private bool CanCrouch()
+    {
+        return !isAttacking && !isJumping;
+    }
+
+
     public void CheckIdleness()
     {
         if(isJumping | isRunning | isAttacking | isCrouching | isGuarding)
@@ -473,8 +527,9 @@ public class CharacterMovement : MonoBehaviour
 
     public void Guard()
     {
-        if (!isGuarding)
+        if (!isGuarding && !isJumping)
         {
+            Stop();
             isGuarding = true;
             ChangeAnimation("Guard");
         }
@@ -483,6 +538,21 @@ public class CharacterMovement : MonoBehaviour
     public void StopGuard()
     {
         isGuarding = false;
+    }
+
+    private void NormalAnimationsConfig()
+    {
+        animator.speed = animationSpeed;
+    }
+
+    private void AttackAnimationsConfig()
+    {
+        animator.speed = attackSpeed;
+    }
+
+    public void OnAttackWork(Collider2D target)
+    {
+        target.gameObject.GetComponent<SpriteRenderer>().material.color = Color.red;
     }
 
     public bool CheckPlayerButton()
