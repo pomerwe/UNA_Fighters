@@ -128,7 +128,11 @@ public class CharacterMovement : MonoBehaviour
     {
         CheckIdleness();
 
-       
+        if (col.gameObject.name == "Character")
+        {
+            CheckCharacterPushing(col);
+        }
+            
 
         if (col.gameObject.name == "Floor")
         {
@@ -286,6 +290,10 @@ public class CharacterMovement : MonoBehaviour
                         {
                             RunAnimation();
                         }
+                        if(rb.velocity.x < 0)
+                        { 
+                            Stop();
+                        }
                         if (rb.velocity.x < maxSpeed)
                         {
                             newSpeed.x = rb.velocity.x + moveSpeed;
@@ -305,6 +313,10 @@ public class CharacterMovement : MonoBehaviour
                         if (!isJumping)
                         {
                             RunAnimation();
+                        }
+                        if (rb.velocity.x > 0)
+                        {
+                            Stop();
                         }
                         if (rb.velocity.x > -maxSpeed)
                         {
@@ -553,6 +565,10 @@ public class CharacterMovement : MonoBehaviour
     public void OnAttackWork(Collider2D target)
     {
         target.gameObject.GetComponent<CharacterStats>().character.HP -= 5;
+    }
+
+    public void CheckCharacterPushing(Collision2D col)
+    {
     }
 
     public bool CheckPlayerButton()
