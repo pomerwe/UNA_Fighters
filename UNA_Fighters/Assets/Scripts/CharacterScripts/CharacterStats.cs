@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
 {
+    private MatchController matchController;
+
     public Character character;
     public GameObject HPBarPrefab;
 
@@ -12,6 +14,8 @@ public class CharacterStats : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        matchController = GameObject.Find("MatchController").GetComponent<MatchController>();
+        matchController.characters.Add(gameObject);
         character = new Character(gameObject.name);
         HPBar = transform.Find("HPBar").gameObject;
     }
@@ -25,8 +29,9 @@ public class CharacterStats : MonoBehaviour
 
     private void CheckDeath()
     {
-        if(character.HP < 0)
+        if(character.HP <= 0)
         {
+            matchController.characters.Remove(gameObject);
             Destroy(gameObject);
         }
     }
