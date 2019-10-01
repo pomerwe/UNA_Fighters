@@ -37,6 +37,8 @@ public class CharacterMovement : MonoBehaviour
     public bool crouchHolded;
     public bool isGuarding;
 
+    public bool canThrow = false;
+
     private Direction lastDirection;
     private Direction currentDirection;
 
@@ -79,12 +81,15 @@ public class CharacterMovement : MonoBehaviour
 
         if (col.gameObject.transform.parent.gameObject.name == "Characters")
         {
-            if(col.otherCollider is CapsuleCollider2D)
+            if (col.otherCollider is CapsuleCollider2D)
             {
                 OnAttackWork(col.collider);
             }
         }
-
+        if (col.gameObject.name == "InvisibleWall")
+        {
+            Destroy(gameObject);
+        }
         if (col.gameObject.name == "Floor")
         {
             Vector2 onFloorCollideVelocity = rb.velocity;
@@ -227,12 +232,35 @@ public class CharacterMovement : MonoBehaviour
                     {
                         Move(Movement.Forward);
                     }
-                    if (Input.GetKey(KeyCode.DownArrow))
+                    if (Input.GetKeyDown(KeyCode.Keypad0))
                     {
-                        Move(Movement.Down);
+                        Attack();
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Keypad1))
+                    {
+                        Throw();
                     }
                 }
                 break;
+        }
+    }
+
+    private void Throw()
+    {
+        if (CanAttack())
+        {
+            if (canThrow)
+            {
+                Stop();
+                if (!isAttacking)
+                {
+                    isAttacking = true;
+                    AttackAnimation($"Special01");
+                    var throwComponent = GetComponent<CharacterThrow>();
+                    throwComponent.ThrowObject(Direction.Left);
+                }
+            }
         }
     }
 
@@ -382,8 +410,8 @@ public class CharacterMovement : MonoBehaviour
         {
             AttackAnimationsConfig();
             animatorOverrideController["Animation"] = characterAnimations[animationName];
-            animator.Play("Attack", 0, 0f);
         }
+        animator.Play("Attack", 0, 0f);
     }
 
     public void RunAnimation()
