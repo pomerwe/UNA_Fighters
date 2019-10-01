@@ -7,17 +7,6 @@ public class ThrowObject : MonoBehaviour
 {
 
     public GameObject whoThrowed;
-    private void Start()
-    {
-        //var stopwatch = new Stopwatch();
-        //stopwatch.Start();
-        //while (stopwatch.Elapsed.TotalSeconds <= 10)
-        //{
-
-        //}
-        //stopwatch.Stop();
-        //Destroy(gameObject);
-    }
     private void OnCollisionEnter2D(Collision2D col)
     {
         if (col.rigidbody.gameObject.transform.parent.gameObject.name == "Characters")

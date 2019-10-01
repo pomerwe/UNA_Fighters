@@ -5,18 +5,19 @@ using UnityEngine.UI;
 
 public class MatchController : MonoBehaviour
 {
-    public List<GameObject> characters;
+    public List<GameObject> characters = new List<GameObject>();
     public Text winLabel;
     public GameObject winPanel;
+    public bool matchEnded = false;
 
     private void Start()
     {
-        characters = new List<GameObject>();
+        matchEnded = false;
     }
     private void Update()
     {
         CheckCharacters();
-        if(characters.Count == 1)
+        if(matchEnded)
         {
             winLabel.text = (characters[0].name.ToString() + " WINS").ToUpper();
             winPanel.SetActive(true);
@@ -31,6 +32,12 @@ public class MatchController : MonoBehaviour
                 characters.Remove(c);
             }
         });
+
+
+        if (characters.Count == 1)
+        {
+            matchEnded = true;
+        }
     }
 
 }
