@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8586204189387119222}
   - component: {fileID: 6598168969452298039}
   - component: {fileID: 6665707825604098235}
+  - component: {fileID: 7062677987506408714}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -31,9 +32,9 @@ Transform:
   m_GameObject: {fileID: 8586204189387119229}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.58, y: 3.19, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4291394355395402790}
+  - {fileID: 4291394355395402833}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -147,7 +148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNumber: 1
-  animationSpeed: 0.2
+  animationSpeed: 0.1
   attackSpeed: 2
   maxSpeed: 11
   jumpForce: 700
@@ -158,7 +159,6 @@ MonoBehaviour:
   maxfallDownSpeed: -15
   weightValue: 5
   jumpCount: 0
-  attackCount: 0
   isAttacking: 0
   isIdle: 0
   isJumping: 0
@@ -206,6 +206,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!70 &7062677987506408714
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8586204189387119229}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 5.8699994, y: 7.0699997}
+  m_Direction: 0
 --- !u!1001 &4291394355395402779
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -275,7 +291,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ffdf8f33e48b104291cbe172b0af2a6, type: 3}
---- !u!4 &4291394355395402790 stripped
+--- !u!4 &4291394355395402833 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1613531820830080514, guid: 2ffdf8f33e48b104291cbe172b0af2a6,
     type: 3}

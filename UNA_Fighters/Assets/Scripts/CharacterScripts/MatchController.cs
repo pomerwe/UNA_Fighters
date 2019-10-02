@@ -16,6 +16,7 @@ public class MatchController : MonoBehaviour
     }
     private void Update()
     {
+        
         CheckCharacters();
         if(matchEnded)
         {

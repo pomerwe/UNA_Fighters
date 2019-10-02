@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
     public Dictionary<string, AnimationClip> characterAnimations;
-
+    
     //If it is player 1 or player 2
     public int playerNumber;
 
     private Vector3 currentPlayerPosition;
     private Vector2 jump;
+
+    public float attackCount;
+
+    private float currentAttack = 1;
 
     public float animationSpeed = 0.2f;
     public float attackSpeed = 2f;
@@ -84,11 +89,11 @@ public class CharacterMovement : MonoBehaviour
                 OnAttackWork(col.collider);
             }
         }
-        if (col.gameObject.name == "InvisibleWall")
-        {
-            Destroy(gameObject);
-            return;
-        }
+        //if (col.gameObject.name == "InvisibleWall")
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
         if (col.gameObject.name == "Floor")
         {
             Vector2 onFloorCollideVelocity = rb.velocity;
@@ -272,10 +277,17 @@ public class CharacterMovement : MonoBehaviour
         if (CanAttack())
         {
             Stop();
+
+            if(currentAttack > attackCount)
+            {
+                currentAttack = 1;
+            }
+
             if (!isAttacking)
             {
                 isAttacking = true;
-                AttackAnimation($"Attack01");
+                AttackAnimation($"Attack0{currentAttack}");
+                currentAttack++;
             }
         }
     }
@@ -406,8 +418,11 @@ public class CharacterMovement : MonoBehaviour
     {
         if (characterAnimations.ContainsKey(animationName))
         {
-            AttackAnimationsConfig();
-            animatorOverrideController["Animation"] = characterAnimations[animationName];
+            if (animatorOverrideController["Animation"] != characterAnimations[animationName])
+            {
+                AttackAnimationsConfig();
+                animatorOverrideController["Animation"] = characterAnimations[animationName];
+            }
         }
         animator.Play("Attack", 0, 0f);
     }
