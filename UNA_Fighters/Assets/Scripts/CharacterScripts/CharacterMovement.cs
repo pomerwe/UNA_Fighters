@@ -257,7 +257,7 @@ public class CharacterMovement : MonoBehaviour
 
     private void Throw()
     {
-        if (CanAttack())
+        if (CanThrow())
         {
             if (canThrow)
             {
@@ -589,6 +589,11 @@ public class CharacterMovement : MonoBehaviour
     private bool CanAttack()
     {
         return !isJumping && !isGuarding;
+    }
+
+    private bool CanThrow()
+    {
+        return !isGuarding;
     }
 
     private bool CanCrouch()
