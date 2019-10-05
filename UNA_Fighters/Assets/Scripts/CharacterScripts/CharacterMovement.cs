@@ -247,6 +247,7 @@ public class CharacterMovement : MonoBehaviour
 
                     if (Input.GetKeyDown(KeyCode.L))
                     {
+
                         Throw();
                     }
                 }
@@ -260,13 +261,17 @@ public class CharacterMovement : MonoBehaviour
         {
             if (canThrow)
             {
-                Stop();
-                if (!isAttacking)
+                if(GetComponent<CharacterStats>().character.Stamina == 100)
                 {
-                    isAttacking = true;
-                    AttackAnimation($"Special01");
-                    var throwComponent = GetComponent<CharacterThrow>();
-                    throwComponent.ThrowObject(isFlipped ? Direction.Left : Direction.Right);
+                    GetComponent<CharacterStats>().character.Stamina = 0;
+                    Stop();
+                    if (!isAttacking)
+                    {
+                        isAttacking = true;
+                        AttackAnimation($"Special01");
+                        var throwComponent = GetComponent<CharacterThrow>();
+                        throwComponent.ThrowObject(isFlipped ? Direction.Left : Direction.Right);
+                    }
                 }
             }
         }
@@ -274,21 +279,44 @@ public class CharacterMovement : MonoBehaviour
 
     private void Attack()
     {
-        if (CanAttack())
+        if (!isJumping)
         {
-            Stop();
-
-            if(currentAttack > attackCount)
+            if (CanAttack())
             {
-                currentAttack = 1;
-            }
+                Stop();
 
-            if (!isAttacking)
-            {
-                isAttacking = true;
-                AttackAnimation($"Attack0{currentAttack}");
-                currentAttack++;
+                if (currentAttack > attackCount)
+                {
+                    currentAttack = 1;
+                }
+
+                if (!isAttacking)
+                {
+                    isAttacking = true;
+                    AttackAnimation($"Attack0{currentAttack}");
+                    currentAttack++;
+                }
             }
+        }
+        else
+        {
+            AttackJump();
+        }
+        
+    }
+
+    private void AttackJump()
+    {
+        if (currentAttack > attackCount)
+        {
+            currentAttack = 1;
+        }
+
+        if (!isAttacking)
+        {
+            isAttacking = true;
+            AttackAnimation($"Attack0{currentAttack}");
+            currentAttack++;
         }
     }
 
@@ -334,7 +362,7 @@ public class CharacterMovement : MonoBehaviour
                         }
                         if (rb.velocity.x < maxSpeed)
                         {
-                            newSpeed.x = rb.velocity.x + moveSpeed;
+                            newSpeed.x = !isJumping ? rb.velocity.x + moveSpeed : rb.velocity.x + moveSpeed/4;
                             if (newSpeed.x > maxSpeed)
                             {
                                 newSpeed.x = maxSpeed;
@@ -358,7 +386,7 @@ public class CharacterMovement : MonoBehaviour
                         }
                         if (rb.velocity.x > -maxSpeed)
                         {
-                            newSpeed.x = rb.velocity.x - moveSpeed;
+                            newSpeed.x = !isJumping ? rb.velocity.x - moveSpeed : rb.velocity.x - moveSpeed / 4;
                             if (newSpeed.x < -maxSpeed)
                             {
                                 newSpeed.x = -maxSpeed;
@@ -465,10 +493,15 @@ public class CharacterMovement : MonoBehaviour
     public void CheckDirection()
     {
         var flip = new Vector3(0, 180, 0);
+        var barStats = GetComponent<CharacterStats>().StatsBar;
+        var barPos = barStats.transform.localPosition;
         if (currentDirection == Direction.Right)
         {
             if (isFlipped)
             {
+                barStats.transform.Rotate(flip);
+                barPos.x = -barPos.x;
+                barStats.transform.localPosition = barPos;
                 transform.Rotate(flip);
                 isFlipped = false;
             }
@@ -477,6 +510,9 @@ public class CharacterMovement : MonoBehaviour
         {
             if (!isFlipped)
             {
+                barStats.transform.Rotate(flip);
+                barPos.x = -barPos.x;
+                barStats.transform.localPosition = barPos;
                 transform.Rotate(flip);
                 isFlipped = true;
             }

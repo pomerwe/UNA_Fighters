@@ -9,7 +9,7 @@ public class CharacterStats : MonoBehaviour
     public Character character;
     public GameObject HPBarPrefab;
 
-    private GameObject HPBar;
+    public GameObject StatsBar;
 
     // Start is called before the first frame update
     void Start()
@@ -17,14 +17,31 @@ public class CharacterStats : MonoBehaviour
         matchController = GameObject.Find("MatchController").GetComponent<MatchController>();
         matchController.characters.Add(gameObject);
         character = new Character(gameObject.name);
-        HPBar = transform.Find("HPBar").gameObject;
+        StatsBar = transform.Find("StatsBar").gameObject;
+        StatsBar.transform.Find("HP").transform.localScale = new Vector3((character.HP / 100), 0.8f, 1);
+        StatsBar.transform.Find("Stamina").transform.localScale = new Vector3((character.Stamina / 100), 0.2f, 1);
     }
 
     // Update is called once per frame
     void Update()
     {
-        HPBar.transform.Find("HP").transform.localScale = new Vector3((character.HP/100), 1, 1);
+        StatsBar.transform.Find("HP").transform.localScale = new Vector3((character.HP/100), 0.8f, 1);
+        StatsBar.transform.Find("Stamina").transform.localScale = new Vector3((character.Stamina / 100), 0.2f, 1);
         CheckDeath();
+
+        if(character.Stamina < 100)
+        {
+            character.Stamina += 0.5f;
+            if(character.Stamina >= 100)
+            {
+                character.Stamina = 100;
+                StatsBar.transform.Find("Stamina").GetComponent<SpriteRenderer>().material.color = new Color32(0,255,36,255);
+            }
+            else
+            {
+                StatsBar.transform.Find("Stamina").GetComponent<SpriteRenderer>().material.color = new Color32(0, 255, 36, 138);
+            }
+        }
     }
 
     private void CheckDeath()
@@ -41,7 +58,7 @@ public class Character
 {
     public string Name { get; set; }
     public float HP { get; set; }
-    public float MP { get; set; }
+    public float Stamina { get; set; }
     public int KillCount { get; set; }
     public int DeathCount { get; set; }
 
@@ -49,7 +66,7 @@ public class Character
     {
         Name = name;
         HP = 100f;
-        MP = 0f;
+        Stamina = 0f;
         KillCount = 0;
         DeathCount = 0;
     }
