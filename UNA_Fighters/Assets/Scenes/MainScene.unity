@@ -3759,7 +3759,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNumber: 1
-  attackCount: 2
+  attackCount: 3
   animationSpeed: 0.2
   attackSpeed: 4
   maxSpeed: 11

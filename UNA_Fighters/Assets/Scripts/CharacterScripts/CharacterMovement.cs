@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -285,10 +286,8 @@ public class CharacterMovement : MonoBehaviour
             {
                 Stop();
 
-                if (currentAttack > attackCount)
-                {
-                    currentAttack = 1;
-                }
+                var n = new System.Random();
+                currentAttack = n.Next(1,(int)attackCount + 1);
 
                 if (!isAttacking)
                 {
@@ -430,6 +429,9 @@ public class CharacterMovement : MonoBehaviour
 
     public void ChangeAnimation(string animationName)
     {
+        if(isGuarding && (animatorOverrideController["Animation"] == characterAnimations["Guard"])){
+            return;
+        }
         if (characterAnimations.ContainsKey(animationName))
         {
             NormalAnimationsConfig();
@@ -646,7 +648,20 @@ public class CharacterMovement : MonoBehaviour
 
     public void OnAttackWork(Collider2D target)
     {
-        target.gameObject.GetComponent<CharacterStats>().character.HP -= 5;
+        var distance = PositionRelative(gameObject.transform.position, target.gameObject.transform.position);
+        bool willDefend = (distance < 0 && !target.gameObject.GetComponent<CharacterMovement>().isFlipped) ||
+            (distance > 0 && target.gameObject.GetComponent<CharacterMovement>().isFlipped)
+            ? true : false;
+        if (!(target.gameObject.GetComponent<CharacterMovement>().isGuarding && willDefend))
+        {
+            target.gameObject.GetComponent<CharacterStats>().character.HP -= 5;
+        }
+        
+    }
+
+    public float PositionRelative(Vector2 pos, Vector2 pos2)
+    {
+        return (pos2.x - pos.x);
     }
 
     public void CheckCharacterPushing(Collision2D col)
