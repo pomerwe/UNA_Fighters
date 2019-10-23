@@ -1,6 +1,7 @@
 ﻿
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -41,6 +42,7 @@ public class CharacterMovement : MonoBehaviour
     public bool isCrouching;
     public bool crouchHolded;
     public bool isGuarding;
+    public bool takingHit = false;
 
     public bool canThrow = false;
 
@@ -429,7 +431,7 @@ public class CharacterMovement : MonoBehaviour
 
     public void ChangeAnimation(string animationName)
     {
-        if(isGuarding && (animatorOverrideController["Animation"] == characterAnimations["Guard"])){
+        if(takingHit || isGuarding && (animatorOverrideController["Animation"] == characterAnimations["Guard"])){
             return;
         }
         if (characterAnimations.ContainsKey(animationName))
@@ -654,7 +656,10 @@ public class CharacterMovement : MonoBehaviour
             ? true : false;
         if (!(target.gameObject.GetComponent<CharacterMovement>().isGuarding && willDefend))
         {
+            var n = new System.Random();
             target.gameObject.GetComponent<CharacterStats>().character.HP -= 5;
+            target.gameObject.GetComponent<CharacterMovement>().AttackAnimation($"Hit0{n.Next(1, 2)}");
+            target.gameObject.GetComponent<CharacterMovement>().takingHit = true;
         }
         
     }

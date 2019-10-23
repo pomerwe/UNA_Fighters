@@ -20,6 +20,7 @@ public class Chara : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         GameObject.Find(animator.transform.gameObject.name).GetComponent<CharacterMovement>().isAttacking = false;
+        GameObject.Find(animator.transform.gameObject.name).GetComponent<CharacterMovement>().takingHit = false;
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
