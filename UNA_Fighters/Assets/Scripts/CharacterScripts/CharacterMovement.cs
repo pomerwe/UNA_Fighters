@@ -658,7 +658,7 @@ public class CharacterMovement : MonoBehaviour
         {
             var n = new System.Random();
             target.gameObject.GetComponent<CharacterStats>().character.HP -= 5;
-            target.gameObject.GetComponent<CharacterMovement>().AttackAnimation($"Hit0{n.Next(1, 2)}");
+            target.gameObject.GetComponent<CharacterMovement>().AttackAnimation($"Hit0{n.Next(0, 2)}");
             target.gameObject.GetComponent<CharacterMovement>().takingHit = true;
         }
         
