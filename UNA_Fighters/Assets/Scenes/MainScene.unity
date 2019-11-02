@@ -3662,7 +3662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2d4b797c75a54e468baca4ad409b99b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNumber: 2
+  playerNumber: 1
   attackCount: 3
   animationSpeed: 0.2
   attackSpeed: 4
@@ -3685,7 +3685,7 @@ MonoBehaviour:
   crouchHolded: 0
   isGuarding: 0
   takingHit: 0
-  canThrow: 0
+  canThrow: 1
   bc: {fileID: 5587613017231282141}
   rb: {fileID: 5587613017231282142}
   spriteRenderer: {fileID: 5587613017231282143}
@@ -3706,6 +3706,7 @@ GameObject:
   - component: {fileID: 7003665733439523473}
   - component: {fileID: 7359509250657545501}
   - component: {fileID: 6386332340804835500}
+  - component: {fileID: 5587613017231282144}
   m_Layer: 0
   m_Name: cv
   m_TagString: Untagged
@@ -3825,6 +3826,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5587613017231282144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5587613017231282139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9c69303342ca54ea3e047c2f821734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  throwPrefab: {fileID: 4698416172313725543, guid: 3d7b508f0b5ea73408b0bc95ab54ecd1,
+    type: 3}
 --- !u!70 &6386332340804835500
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -4070,7 +4085,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2d4b797c75a54e468baca4ad409b99b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNumber: 1
+  playerNumber: 2
   attackCount: 3
   animationSpeed: 0.2
   attackSpeed: 4

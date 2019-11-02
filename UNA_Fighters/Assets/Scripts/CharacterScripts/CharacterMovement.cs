@@ -290,7 +290,6 @@ public class CharacterMovement : MonoBehaviour
 
                 var n = new System.Random();
                 currentAttack = n.Next(1,(int)attackCount + 1);
-
                 if (!isAttacking)
                 {
                     isAttacking = true;
