@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -57,6 +58,13 @@ public class CharacterMovement : MonoBehaviour
 
     public void Start()
     {
+
+        var c = GameObject.Find("Characters").gameObject.transform;
+        foreach(Transform chara in c)
+        {
+            Physics2D.IgnoreCollision(chara.GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
+        }
+        
 
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
@@ -430,9 +438,6 @@ public class CharacterMovement : MonoBehaviour
 
     public void ChangeAnimation(string animationName)
     {
-        if(takingHit || isGuarding && (animatorOverrideController["Animation"] == characterAnimations["Guard"])){
-            return;
-        }
         if (characterAnimations.ContainsKey(animationName))
         {
             NormalAnimationsConfig();

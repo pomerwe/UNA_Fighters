@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Timers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MatchController : MonoBehaviour
@@ -22,7 +26,17 @@ public class MatchController : MonoBehaviour
         {
             winLabel.text = (characters[0].name.ToString() + " WINS").ToUpper();
             winPanel.SetActive(true);
+            Invoke("ResetScene", 4f);
+            
+           
+           
+          
         }
+    }
+
+    public void ResetScene()
+    {
+        SceneManager.LoadScene("MainScene");
     }
 
     private void CheckCharacters()

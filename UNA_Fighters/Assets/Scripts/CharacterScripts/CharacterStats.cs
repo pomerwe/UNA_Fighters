@@ -9,11 +9,16 @@ public class CharacterStats : MonoBehaviour
     public Character character;
     public GameObject HPBarPrefab;
 
+    public int Layer;
+
     public GameObject StatsBar;
 
     // Start is called before the first frame update
     void Start()
     {
+        var pos = gameObject.transform.position;
+        pos.z = Layer;
+        transform.position = pos;
         matchController = GameObject.Find("MatchController").GetComponent<MatchController>();
         matchController.characters.Add(gameObject);
         character = new Character(gameObject.name);

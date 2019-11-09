@@ -3649,6 +3649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HPBarPrefab: {fileID: 1448797607}
+  Layer: 0
   StatsBar: {fileID: 0}
 --- !u!114 &5587613017231282128
 MonoBehaviour:
@@ -3665,7 +3666,7 @@ MonoBehaviour:
   playerNumber: 1
   attackCount: 3
   animationSpeed: 0.2
-  attackSpeed: 4
+  attackSpeed: 1
   maxSpeed: 11
   jumpForce: 700
   moveSpeed: 1.5
@@ -3869,6 +3870,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HPBarPrefab: {fileID: 1294841743}
+  Layer: -2
   StatsBar: {fileID: 0}
 --- !u!95 &6665707823979555703
 Animator:
@@ -3903,6 +3905,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HPBarPrefab: {fileID: 1613531820830080515, guid: 2ffdf8f33e48b104291cbe172b0af2a6,
     type: 3}
+  Layer: -1
   StatsBar: {fileID: 0}
 --- !u!95 &7359509250657545501
 Animator:
@@ -4088,7 +4091,7 @@ MonoBehaviour:
   playerNumber: 2
   attackCount: 3
   animationSpeed: 0.2
-  attackSpeed: 4
+  attackSpeed: 2
   maxSpeed: 11
   jumpForce: 700
   moveSpeed: 1.5
