@@ -14,6 +14,9 @@ public class CharacterMovement : MonoBehaviour
     //If it is player 1 or player 2
     public int playerNumber;
 
+    public Vector2 player1StartPos = new Vector2(-8.77f, 0);
+    public Vector2 player2StartPos = new Vector2(8.32f, 0);
+
     private Vector3 currentPlayerPosition;
     private Vector2 jump;
 
@@ -62,11 +65,29 @@ public class CharacterMovement : MonoBehaviour
         {
             lastDirection = Direction.Right;
             currentDirection = Direction.Left;
+            if (gameObject.name.Equals("cv"))
+            {
+                player2StartPos.y = -0.337234f;
+            }
+            else
+            {
+                player2StartPos.y = -0.3148847f;
+            }
+            transform.position = player2StartPos;
         }
         else
         {
             currentDirection = Direction.Right;
             lastDirection = currentDirection;
+            transform.position = player1StartPos;
+            if (gameObject.name.Equals("cv"))
+            {
+                player1StartPos.y = -0.337234f;
+            }
+            else
+            {
+                player1StartPos.y = -0.3148847f;
+            }
         }
 
         var c = GameObject.Find("Characters").gameObject.transform;
@@ -221,11 +242,11 @@ public class CharacterMovement : MonoBehaviour
                 {
                     Move(Movement.Forward);
                 }
-                if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.Joystick1Button13) || (Input.GetAxis("p1y") < -0.4f))
+                if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.Joystick1Button13) || (Input.GetAxis("p1y") < -1f))
                 {
                     Move(Movement.Down);
                 }
-                if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.Joystick1Button13) || (Input.GetAxis("p1y") == 0))
+                if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.Joystick1Button13) || (Input.GetAxis("p1y") > -1))
                 {
                     CancelCrouch();
                 }
@@ -240,35 +261,45 @@ public class CharacterMovement : MonoBehaviour
                 break;
 
             case 2:
-                if (!isAttacking)
+                if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Joystick2Button0))
                 {
-                    if (Input.GetKeyDown(KeyCode.UpArrow))
-                    {
-                        Jump();
-                    }
-                    if (Input.GetKeyUp(KeyCode.UpArrow))
-                    {
-                        DeaccellerateJump();
-                    }
-                    if (Input.GetKey(KeyCode.LeftArrow))
-                    {
-
-                        Move(Movement.Backward);
-                    }
-                    if (Input.GetKey(KeyCode.RightArrow))
-                    {
-                        Move(Movement.Forward);
-                    }
-                    if (Input.GetKeyDown(KeyCode.P))
-                    {
-                        Attack();
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.L))
-                    {
-
-                        Throw();
-                    }
+                    Jump();
+                }
+                if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Joystick2Button4) || Input.GetKey(KeyCode.Joystick2Button5))
+                {
+                    Guard();
+                }
+                if (Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.Joystick2Button4) || Input.GetKeyUp(KeyCode.Joystick2Button5))
+                {
+                    StopGuard();
+                }
+                if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.Joystick2Button0))
+                {
+                    DeaccellerateJump();
+                }
+                if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.Joystick2Button14) || (Input.GetAxis("p2x") < 0))
+                {
+                    Move(Movement.Backward);
+                }
+                if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.Joystick2Button15) || (Input.GetAxis("p2x") > 0))
+                {
+                    Move(Movement.Forward);
+                }
+                if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.Joystick2Button13) || (Input.GetAxis("p2y") < -1f))
+                {
+                    Move(Movement.Down);
+                }
+                if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.Joystick2Button13) || (Input.GetAxis("p2y") > -1f))
+                {
+                    CancelCrouch();
+                }
+                if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Joystick2Button2))
+                {
+                    Attack();
+                }
+                if (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.Joystick2Button3))
+                {
+                    Throw();
                 }
                 break;
         }
@@ -739,23 +770,47 @@ public class CharacterMovement : MonoBehaviour
                     return false;
                 }
             case 2:
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if (Input.GetKeyDown(KeyCode.Joystick2Button0))
                 {
                     return true;
                 }
-                else if (Input.GetKeyUp(KeyCode.UpArrow))
+                else if (Input.GetKey(KeyCode.Joystick2Button4) || Input.GetKey(KeyCode.Joystick2Button5))
                 {
                     return true;
                 }
-                else if (Input.GetKey(KeyCode.LeftArrow))
+                else if (Input.GetKeyUp(KeyCode.Joystick2Button4) || Input.GetKeyUp(KeyCode.Joystick2Button5))
                 {
                     return true;
                 }
-                else if (Input.GetKey(KeyCode.RightArrow))
+                else if ( Input.GetKeyUp(KeyCode.Joystick2Button0))
                 {
                     return true;
                 }
-                else if (Input.GetKey(KeyCode.DownArrow))
+                else if (Input.GetKey(KeyCode.Joystick2Button14))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.Joystick2Button15))
+                {
+                    return true;
+                }
+                else if (Input.GetKey(KeyCode.Joystick2Button13))
+                {
+                    return true;
+                }
+                else if (Input.GetKeyUp(KeyCode.Joystick2Button13))
+                {
+                    return true;
+                }
+                else if (Input.GetKeyDown(KeyCode.Joystick2Button2))
+                {
+                    return true;
+                }
+                else if (Input.GetKeyDown(KeyCode.Joystick2Button3))
+                {
+                    return true;
+                }
+                else if ((Input.GetAxis("p2x") != 0 || (Input.GetAxis("p2y") != 0)))
                 {
                     return true;
                 }

@@ -36,7 +36,7 @@ public class MatchController : MonoBehaviour
 
     public void ResetScene()
     {
-        SceneManager.LoadScene("MainScene");
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void CheckCharacters()
