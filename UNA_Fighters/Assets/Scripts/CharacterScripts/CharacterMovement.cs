@@ -58,6 +58,16 @@ public class CharacterMovement : MonoBehaviour
 
     public void Start()
     {
+        if(playerNumber == 2)
+        {
+            lastDirection = Direction.Right;
+            currentDirection = Direction.Left;
+        }
+        else
+        {
+            currentDirection = Direction.Right;
+            lastDirection = currentDirection;
+        }
 
         var c = GameObject.Find("Characters").gameObject.transform;
         foreach(Transform chara in c)
@@ -86,8 +96,6 @@ public class CharacterMovement : MonoBehaviour
         isCrouching = false;
         isIdle = true;
         isGuarding = false;
-        currentDirection = Direction.Right;
-        lastDirection = currentDirection;
     }
 
     void OnCollisionEnter2D(Collision2D col)
