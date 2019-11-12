@@ -45,15 +45,22 @@ public class MenuScript : MonoBehaviour
                 }
         }
 
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.Joystick1Button12) || Input.GetKey(KeyCode.Joystick1Button5)
-            || Input.GetKeyDown(KeyCode.Joystick2Button0) || Input.GetKey(KeyCode.Joystick2Button5))
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKey(KeyCode.Joystick1Button13)
+            || Input.GetKeyDown(KeyCode.Joystick2Button0) || Input.GetKey(KeyCode.Joystick2Button13))
         {
             selectedOption = selectedOption == Options.Start ? Options.Exit : Options.Start;
         }
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            SceneManager.LoadScene("MainScene");
+            if(selectedOption == Options.Start)
+            {
+                SceneManager.LoadScene("MainScene");
+            }
+            else
+            {
+                Application.Quit();
+            }
         }
     }
 }
